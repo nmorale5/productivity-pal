@@ -1,29 +1,27 @@
-async function setupData() {
-    await chrome.storage.local.set({
-        allData: {},
-        lastTime: Date.now()
-    })
-}
-
-async function onClickedNewLink(tabId, changeInfo, tab) {
-    let url = changeInfo.url
-    await addNewUrlData(url)
+async function onNavigatedNewLink(tabId, changeInfo, tabInfo) {
+    if (!changeInfo.title) return
+    await addNewUrlData(tabInfo.url, changeInfo.title)
 }
 
 async function onChangedTab(activeInfo) {
     let tabId = activeInfo.tabId
     let tabInfo = await chrome.tabs.get(tabId)
-    let url = tabInfo.url
-    await addNewUrlData(url)
+    await addNewUrlData(tabInfo.url, tabInfo.title)
 }
 
-async function addNewUrlData(url) {
+async function addNewUrlData(url, title) {
     if (!url) return
+    let currentTime = Date.now()
     let { allData } = await chrome.storage.local.get("allData")
     let { lastTime } = await chrome.storage.local.get("lastTime")
-    let currentTime = Date.now()
-    timeDiff = currentTime - lastTime
-    if (!allData[url]) allData[url] = 0
-    allData[url] += timeDiff / 1000 // convert ms to s
-    await chrome.storage.local.set({ allData: allData, lastTime: currentTime })
+    let { lastUrl } = await chrome.storage.local.get("lastUrl")
+    let { lastTitle } = await chrome.storage.local.get("lastTitle")
+    await chrome.storage.local.set({ lastTime: currentTime, lastUrl: url, lastTitle: title })
+    if (!lastUrl) return
+    let timeDiff = currentTime - lastTime
+    if (!allData[lastUrl]) allData[lastUrl] = { time: 0 }
+    allData[lastUrl].time += timeDiff / 1000 // convert ms to s
+    allData[lastUrl].title = lastTitle
+    console.log(lastTitle, timeDiff)
+    await chrome.storage.local.set({ allData })
 }
