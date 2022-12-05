@@ -6,7 +6,8 @@ async function initialize() {
 
 async function setupData() {
   await chrome.storage.local.set({
-    history: [], // interlaced list of timestamps and url data
+    history: [], // list of objects with url, title, & time (timestamp)
+    productive: {}, // object mapping urls to booleans
   })
 }
 
