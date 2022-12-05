@@ -6,8 +6,7 @@ async function initialize() {
 
 async function setupData() {
   await chrome.storage.local.set({
-    allData: {},
-    lastTime: Date.now(),
+    history: [], // interlaced list of timestamps and url data
   })
 }
 
@@ -15,3 +14,4 @@ chrome.runtime.onInstalled.addListener(initialize)
 chrome.runtime.onStartup.addListener(initialize)
 chrome.tabs.onUpdated.addListener(onNavigatedNewLink)
 chrome.tabs.onActivated.addListener(onChangedTab)
+chrome.windows.onFocusChanged.addListener(onChangedWindow)
