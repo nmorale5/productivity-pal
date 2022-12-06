@@ -1,4 +1,9 @@
-.chart-display {
+.doughnut-display {
     width: 600px;
     height: 600px;
+}
+
+.scatter-display {
+    width: 600px;
+    height: 200px;
 }
