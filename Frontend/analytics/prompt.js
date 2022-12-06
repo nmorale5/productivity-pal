@@ -18,6 +18,7 @@ async function DisplayChecklist(history, productive) {
             if (urlData.url === null) continue  // skip inactive
             if (seenUrls[urlData.url]) continue // avoid duplicate checkboxes
             if (productive[urlData.url] !== val) continue // does all true first, then all false, then all undefined
+			if (urlData.url == '' || urlData.title == "Sites Visited" || urlData.title == "Your Analytics") continue //always consider analytic pages inactive, don't display
 
             seenUrls[urlData.url] = true
 

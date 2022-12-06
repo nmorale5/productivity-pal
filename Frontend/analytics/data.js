@@ -12,6 +12,9 @@ async function SetupCharts() {
     DisplayDoughnutChart(doughnutData)
     let scatterData = GetScatterChartData(history, productive)
     DisplayScatterChart(scatterData)
+	let outlierData = GetOutliers(history, productive)
+	DisplayOutliers(outlierData)
+	DisplayRankedList(history, productive)
 }
 
 function GetDoughnutChartData(history, productive) {
@@ -75,7 +78,7 @@ function GetScatterChartData(history, productive) {
 function FormatScatterPoints(data) {
     let out = { prod: [], unprod: [], inactive: [] }
     let lastValue = 0
-    for (let i=0; i<data.length-1; i++) {
+    for (let i=0; i<data.length-3; i++) { //skip last three to remove analytics pages
         let bump = []
         // connect horizontal line to x-axis at start, if necessary
         if (data[i].value != lastValue && data[i].value != 0) {
@@ -138,5 +141,90 @@ function DisplayScatterChart(scatterData) {
         }
     )
 }
+
+function GetOutliers(history, productive) {
+    let totalTime = 0
+	let count = 0
+	
+    for (let i = 0; i < history.length - 1; i++) {
+        let deltaTime = (history[i+1].time - history[i].time) / 60_000
+        totalTime += deltaTime
+		count += 1
+    }
+	let average = totalTime / count
+	
+	let squaredError = 0
+    for (let i = 0; i < history.length - 1; i++) {
+        let deltaTime = (history[i+1].time - history[i].time) / 60_000
+        squaredError += Math.pow(deltaTime - average, 2)
+    }
+	let sd = Math.sqrt(squaredError / (count - 1))
+	
+	let outliers = []
+	for (let i = 0; i < history.length - 1; i++) {
+		if (history[i].title == '' || history[i].title == "Sites Visited" || history[i].title == "Your Analytics") continue
+        let deltaTime = (history[i+1].time - history[i].time) / 60_000
+        if (deltaTime > average + 2*sd) {
+			outliers.push(history[i].title)
+		}
+    }
+	if (outliers.length < 1) {
+		outliers.push("None")
+	}
+    return outliers
+}
+
+function DisplayOutliers(outlierData) {
+	let list = document.getElementById("outliers")
+	outlierData.forEach((item)=>{
+		let li = document.createElement("li")
+		li.innerText = item
+		list.appendChild(li)
+	})
+}
+
+function DisplayRankedList(history, productive) {
+	let seenUrls = {}
+	for (let i = 0; i < history.length - 1; i++) {
+        let deltaTime = (history[i+1].time - history[i].time) / 60_000
+		if (history[i].url in seenUrls) {
+			seenUrls[history[i].url][1] += deltaTime
+		} else {
+			seenUrls[history[i].url] = [history[i].title, deltaTime]
+		}
+	}
+	
+    let prod = []
+    let unprod = []
+	for (let url of Object.keys(seenUrls)) {
+		if (productive[url] === true) {
+            prod.push(seenUrls[url])
+        } if (productive[url] === false) {
+            unprod.push(seenUrls[url])
+        } // ignore if productive is undefined
+    }
+	
+	prod.sort(function(first, second) {
+		return second[1] - first[1]
+	})
+	unprod.sort(function(first, second) {
+		return second[1] - first[1]
+	})
+	
+	let prodList = document.getElementById("productive")
+	prod.forEach((item)=>{
+		let li = document.createElement("li")
+		li.innerText = item[0]
+		prodList.appendChild(li)
+	})
+	
+	let unprodList = document.getElementById("unproductive")
+	unprod.forEach((item)=>{
+		let li = document.createElement("li")
+		li.innerText = item[0]
+		unprodList.appendChild(li)
+	})
+}
+
 
 SetupCharts()
