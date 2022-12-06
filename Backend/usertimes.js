@@ -33,16 +33,9 @@ async function addNewUrlData(url, title) {
     await chrome.storage.local.set({ history })
 }
 
-// async function addNewUrlData(url, title) {
-//     if (!url) return
-//     let currentTime = Date.now()
-//     let { allData, lastTime, lastUrl, lastTitle } = await chrome.storage.local.get(["allData", "lastTime", "lastUrl", "lastTitle"])
-//     await chrome.storage.local.set({ lastTime: currentTime, lastUrl: url, lastTitle: title })
-//     if (!lastUrl) return
-//     let timeDiff = currentTime - lastTime
-//     if (!allData[lastUrl]) allData[lastUrl] = { time: 0 }
-//     allData[lastUrl].time += timeDiff / 1000 // convert ms to s
-//     allData[lastUrl].title = lastTitle
-//     console.log(lastTitle, timeDiff)
-//     await chrome.storage.local.set({ allData })
-// }
+async function checkInactive() {
+    let window = await chrome.windows.get(chrome.windows.WINDOW_ID_CURRENT)
+    let { inactive } = await chrome.storage.local.get("inactive")
+    console.log(window)
+    if (!window.focused) return
+}

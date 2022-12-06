@@ -1,9 +1,18 @@
 .doughnut-display {
-    width: 600px;
-    height: 600px;
+    width: 320px;
+    height: 320px;
 }
 
 .scatter-display {
-    width: 600px;
-    height: 200px;
+    width: 800px;
+    height: 320px;
+}
+
+.container {
+    display: flex;
+    flex-direction: horizontal;
+}
+
+ul {
+    font-size: 18px;
 }

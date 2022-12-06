@@ -8,6 +8,7 @@ async function setupData() {
   await chrome.storage.local.set({
     history: [], // list of objects with url, title, & time (timestamp)
     productive: {}, // object mapping urls to booleans
+    inactive: false, // whether the user is currently read as inactive
   })
 }
 
@@ -16,3 +17,4 @@ chrome.runtime.onStartup.addListener(initialize)
 chrome.tabs.onUpdated.addListener(onNavigatedNewLink)
 chrome.tabs.onActivated.addListener(onChangedTab)
 chrome.windows.onFocusChanged.addListener(onChangedWindow)
+// setInterval(checkInactive, 1000) // ping every second (might drain battery lol)
