@@ -12,6 +12,8 @@ async function SetupCharts() {
     DisplayDoughnutChart(doughnutData)
     let scatterData = GetScatterChartData(history, productive)
     DisplayScatterChart(scatterData)
+	let outlierData = GetOutliers(history, productive)
+	DisplayOutliers(outlierData)
 	DisplayRankedList(history, productive)
 }
 
@@ -49,7 +51,10 @@ function DisplayDoughnutChart(doughnutData) {
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Totat time spent (%)'
+                        text: 'Total Time Spent (%)',
+                        font: {
+                            size: 16
+                        },
                     },
                 },
             }
@@ -114,7 +119,6 @@ function DisplayScatterChart(scatterData) {
             type: 'scatter',
             data: {
                 datasets: datasets,
-                labels: ["Time in minutes", "foo"]
             },
             options: {
                 responsive: true,
@@ -132,7 +136,10 @@ function DisplayScatterChart(scatterData) {
                     },
                     title: {
                         display: true,
-                        text: 'Productivity over time (minutes)'
+                        text: 'Productivity Over Time (minutes)',
+                        font: {
+                            size: 16
+                        }
                     },
                 },
             }
@@ -163,13 +170,22 @@ function GetOutliers(history, productive) {
 		if (history[i].title == '' || history[i].title == "Sites Visited" || history[i].title == "Your Analytics") continue
         let deltaTime = (history[i+1].time - history[i].time) / 60_000
         if (deltaTime > average + 2*sd) {
-			outliers.push([history[i].title, deltaTime])
+			outliers.push(history[i].title)
 		}
     }
-    // if (outliers.length < 1) {
-	// 	outliers.push("None")
-	// }
+	if (outliers.length < 1) {
+		outliers.push("None")
+	}
     return outliers
+}
+
+function DisplayOutliers(outlierData) {
+	let list = document.getElementById("outliers")
+	outlierData.forEach((item)=>{
+		let li = document.createElement("li")
+		li.innerText = item
+		list.appendChild(li)
+	})
 }
 
 function DisplayRankedList(history, productive) {
@@ -200,23 +216,12 @@ function DisplayRankedList(history, productive) {
     for (let [_, time] of unprod) {
         totalTime += time
     }
-    console.log(totalTime)
 	
 	prod.sort(function(first, second) {
 		return second[1] - first[1]
 	})
 	unprod.sort(function(first, second) {
 		return second[1] - first[1]
-	})
-
-    let outlierData = GetOutliers(history, productive)
-    
-    let list = document.getElementById("outliers")
-	outlierData.forEach((item)=>{
-		let li = document.createElement("li")
-        let percentage = Math.round(1000 * item[1] / totalTime) / 10
-		li.innerText = "(" +  percentage + "%) " + item[0]
-		list.appendChild(li)
 	})
 	
 	let prodList = document.getElementById("productive")
