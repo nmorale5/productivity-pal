@@ -122,7 +122,7 @@ function RemoveBlueEnds({ prod, unprod, inactive }) {
     console.log(earliest, latest)
     let newInactive = []
     for (let bump of inactive) {
-        if (bump[1].x < earliest || bump[0].x > latest) continue
+        if (bump[0].x < earliest || bump[1].x > latest) continue
         newInactive.push(bump)
     }
     return [prod, unprod, newInactive]
