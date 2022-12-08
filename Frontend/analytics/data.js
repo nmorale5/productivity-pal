@@ -9,7 +9,7 @@ import { Chart } from '../../node_modules/chart.js/auto/auto.js'
 async function SetupCharts() {
     let { history, productive, sessions, viewing } = await chrome.storage.local.get(["history", "productive", "sessions", "viewing"])
     let title = document.getElementById("title")
-    if (viewing !== null) {
+    if (sessions[viewing]) {
         history = sessions[viewing].history
         title.innerText = sessions[viewing].name + " Productivity"
     } else {
@@ -112,7 +112,7 @@ function findEarliest(prod, unprod) {
 }
 
 function findLatest(prod, unprod) {
-    return Math.max(...[prod, unprod].filter(bumps => bumps.length > 0).map(bumps => bumps[bumps.length-1][2].x))
+    return Math.max(...[prod, unprod].filter(bumps => bumps.length > 0).map(bumps => bumps[bumps.length-1][bumps[bumps.length-1].length-1].x))
 }
 
 // removes unnecessary inactive time at the start and end
@@ -124,6 +124,11 @@ function RemoveBlueEnds({ prod, unprod, inactive }) {
     for (let bump of inactive) {
         if (bump[0].x < earliest || bump[1].x > latest) continue
         newInactive.push(bump)
+    }
+    for (let bump of [...prod, ...unprod]) {
+        for (let point of bump) {
+            point.x -= earliest
+        }
     }
     return [prod, unprod, newInactive]
 }

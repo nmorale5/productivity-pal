@@ -54,7 +54,7 @@ async function ConfigureButtons() {
     bullet.onclick = async function() {
         let { history } = await chrome.storage.local.get("history")
         if (checkLength(history)) {
-            await chrome.storage.local.set({ viewing: null })
+            await chrome.storage.local.set({ viewing: sessions.length })
             window.open("../analytics/prompt.html", "_blank")
         }
         else {

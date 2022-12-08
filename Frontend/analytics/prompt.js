@@ -1,6 +1,6 @@
 async function SetupPrompt() {
     let { history, productive, viewing, sessions } = await chrome.storage.local.get(["history", "productive", "viewing", "sessions"])
-    if (viewing !== null) {
+    if (sessions[viewing]) {
         history = sessions[viewing].history
     }
     await DisplayChecklist(history, productive)

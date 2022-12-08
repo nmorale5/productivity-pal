@@ -10,7 +10,7 @@ async function setupData() {
     productive: {}, // object mapping urls to booleans
     inactive: false, // whether the user is currently read as inactive
     sessions: [], // all previous sessions {history, name}
-    viewing: null, // the session number to load to the dashboard (null if current)
+    viewing: 0, // index of sessions to load to the dashboard (if == sessions.length, load from current instead)
   })
 }
 
