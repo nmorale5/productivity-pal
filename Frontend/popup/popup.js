@@ -4,11 +4,7 @@ function SetupPopup() {
 
 // returns true iff history contains at least 2 "real" urls
 function checkLength(history) {
-    let sites = history.filter((urlData) => {
-        return !['', "Sites Visited", "Your Analytics", null, undefined].includes(urlData.title)
-    })
-    console.log(sites)
-    return sites.length >= 2
+    return history.filter(urlData => !['', "Sites Visited", "Your Analytics", null, undefined].includes(urlData.title)).length >= 2
 }
 
 function displayWarning() {

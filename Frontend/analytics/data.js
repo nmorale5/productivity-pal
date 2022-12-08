@@ -104,10 +104,32 @@ function FormatScatterPoints(data) {
         out[data[i].type].push(bump)
         lastValue = data[i].value
     }
-    return [out.prod, out.unprod, out.inactive]
+    return RemoveBlueEnds(out)
+}
+
+function findEarliest(prod, unprod) {
+    return Math.min(...[prod, unprod].filter(bumps => bumps.length > 0).map(bumps => bumps[0][0].x))
+}
+
+function findLatest(prod, unprod) {
+    return Math.max(...[prod, unprod].filter(bumps => bumps.length > 0).map(bumps => bumps[bumps.length-1][2].x))
+}
+
+// removes unnecessary inactive time at the start and end
+function RemoveBlueEnds({ prod, unprod, inactive }) {
+    let earliest = findEarliest(prod, unprod)
+    let latest = findLatest(prod, unprod)
+    console.log(earliest, latest)
+    let newInactive = []
+    for (let bump of inactive) {
+        if (bump[1].x < earliest || bump[0].x > latest) continue
+        newInactive.push(bump)
+    }
+    return [prod, unprod, newInactive]
 }
 
 function DisplayScatterChart(scatterData) {
+    console.log(scatterData)
     let colors = ['#32de84', '#ff004f', '#76abdf']
     let datasets = []
     for (let i=0; i<3; i++) {
