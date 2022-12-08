@@ -125,7 +125,7 @@ function RemoveBlueEnds({ prod, unprod, inactive }) {
         if (bump[0].x < earliest || bump[1].x > latest) continue
         newInactive.push(bump)
     }
-    for (let bump of [...prod, ...unprod]) {
+    for (let bump of [...prod, ...unprod, ...inactive]) {
         for (let point of bump) {
             point.x -= earliest
         }
