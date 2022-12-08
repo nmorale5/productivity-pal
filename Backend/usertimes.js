@@ -18,7 +18,7 @@ async function onChangedWindow(windowId) {
         return await addNewUrlData(null, null) // used to represent inactivity
     }
     [tab] = await chrome.tabs.query({windowId: windowId, active: true})
-    console.log(tab)
+    // console.log(tab)
     await addNewUrlData(tab.url, tab.title)
 }
 
@@ -29,7 +29,6 @@ async function addNewUrlData(url, title) {
         title: title,
         time: Date.now(),
     })
-    console.log(history)
     await chrome.storage.local.set({ history })
 }
 

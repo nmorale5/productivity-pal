@@ -9,6 +9,8 @@ async function setupData() {
     history: [], // list of objects with url, title, & time (timestamp)
     productive: {}, // object mapping urls to booleans
     inactive: false, // whether the user is currently read as inactive
+    sessions: [], // all previous sessions {history, name}
+    viewing: null, // the session number to load to the dashboard (null if current)
   })
 }
 

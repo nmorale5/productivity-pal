@@ -1,5 +1,8 @@
 async function SetupPrompt() {
-    let { history, productive } = await chrome.storage.local.get(["history", "productive"])
+    let { history, productive, viewing, sessions } = await chrome.storage.local.get(["history", "productive", "viewing", "sessions"])
+    if (viewing !== null) {
+        history = sessions[viewing].history
+    }
     await DisplayChecklist(history, productive)
     await ConfigureButtonClick(productive)
 }
@@ -42,13 +45,14 @@ async function DisplayChecklist(history, productive) {
     }
 }
 
-// async function UpdateProductivityData(productive) {
-//     await chrome.storage.local.set({ productive })
-// }
-
-async function ConfigureButtonClick(productive) {
+async function ConfigureButtonClick(newProductive) {
     let button = document.getElementById('continue')
     button.addEventListener('click', async function() {
+        // pull first before overriding
+        let { productive } = await chrome.storage.local.get("productive")
+        for (let url of Object.keys(newProductive)) {
+            productive[url] = newProductive[url]
+        }
         await chrome.storage.local.set({ productive })
         window.location.replace('./data.html')
     })

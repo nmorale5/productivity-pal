@@ -7,7 +7,14 @@ import { Chart } from '../../node_modules/chart.js/auto/auto.js'
  */
 
 async function SetupCharts() {
-    let { history, productive } = await chrome.storage.local.get(["history", "productive"])
+    let { history, productive, sessions, viewing } = await chrome.storage.local.get(["history", "productive", "sessions", "viewing"])
+    let title = document.getElementById("title")
+    if (viewing !== null) {
+        history = sessions[viewing].history
+        title.innerText = sessions[viewing].name + " Productivity"
+    } else {
+        title.innerText = "Current Session Productivity"
+    }
     let doughnutData = GetDoughnutChartData(history, productive)
     DisplayDoughnutChart(doughnutData)
     let scatterData = GetScatterChartData(history, productive)
